@@ -1,0 +1,391 @@
+body {
+  margin: 0;
+  padding: 0;
+  color: var(--vscode-foreground);
+  background: var(--vscode-editor-background);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+#page {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 24px 24px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ---- Header ---- */
+
+#titleRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+h1 {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.buttons,
+.actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 6px;
+}
+
+#summary {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
+}
+
+#message {
+  margin: 0;
+  padding: 48px 0;
+  text-align: center;
+  font-size: 14px;
+  color: var(--vscode-descriptionForeground);
+}
+
+#notes:empty {
+  display: none;
+}
+
+.note,
+.problem {
+  margin: 0 0 6px;
+}
+
+.note {
+  color: var(--vscode-descriptionForeground);
+}
+
+.problem {
+  padding: 6px 10px;
+  border-radius: 3px;
+  color: var(--vscode-inputValidation-warningForeground, var(--vscode-foreground));
+  background: var(--vscode-inputValidation-warningBackground, rgba(190, 140, 0, 0.15));
+  border: 1px solid var(--vscode-inputValidation-warningBorder, #b89500);
+}
+
+/* ---- Controls ---- */
+
+button, input {
+  font: inherit;
+  border-radius: 2px;
+}
+
+button {
+  color: var(--vscode-button-secondaryForeground);
+  background: var(--vscode-button-secondaryBackground);
+  border: 1px solid var(--vscode-button-border, transparent);
+  padding: 3px 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+
+button:focus-visible,
+input:focus {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+#tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#filter {
+  flex: 1;
+  max-width: 360px;
+  padding: 3px 6px;
+  color: var(--vscode-input-foreground);
+  background: var(--vscode-input-background);
+  border: 1px solid var(--vscode-input-border, transparent);
+}
+
+#matches {
+  margin-right: auto;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--vscode-descriptionForeground);
+}
+
+/* A reference to another block of the file. */
+.jump {
+  padding: 0;
+  color: var(--vscode-textLink-foreground);
+  background: none;
+  border: none;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.jump:hover {
+  color: var(--vscode-textLink-activeForeground);
+  background: none;
+  text-decoration: underline;
+}
+
+/* ---- Validity ---- */
+
+.state.valid {
+  color: var(--vscode-testing-iconPassed, #388a34);
+}
+
+.state.soon {
+  color: var(--vscode-editorWarning-foreground, #bf8803);
+}
+
+.state.expired,
+.state.future {
+  color: var(--vscode-errorForeground, #f14c4c);
+}
+
+.pill {
+  margin-left: auto;
+  padding: 1px 9px;
+  font-size: 12px;
+  white-space: nowrap;
+  border: 1px solid currentColor;
+  border-radius: 10px;
+}
+
+.tag {
+  padding: 0 6px;
+  font-size: 11px;
+  line-height: 17px;
+  white-space: nowrap;
+  border-radius: 3px;
+  color: var(--vscode-badge-foreground);
+  background: var(--vscode-badge-background);
+}
+
+/* A key anyone with the file can use, and a block that didn't read cleanly. */
+.tag.unlocked,
+.tag.damaged {
+  color: var(--vscode-editorWarning-foreground, #bf8803);
+  background: none;
+  border: 1px solid currentColor;
+  line-height: 15px;
+}
+
+/* ---- Chain ---- */
+
+#chain {
+  padding: 10px 14px;
+  border: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.25));
+  border-left: 3px solid var(--vscode-descriptionForeground);
+  border-radius: 4px;
+}
+
+#chain.ordered {
+  border-left-color: var(--vscode-testing-iconPassed, #388a34);
+}
+
+#chain.reversed,
+#chain.mixed {
+  border-left-color: var(--vscode-editorWarning-foreground, #bf8803);
+}
+
+#chainText {
+  margin: 0;
+}
+
+#tree {
+  margin-top: 10px;
+}
+
+.node {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  padding: 2px 0;
+}
+
+.branch,
+.outside {
+  color: var(--vscode-descriptionForeground);
+}
+
+.node .state {
+  font-size: 12px;
+}
+
+/* ---- Blocks ---- */
+
+#blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.block {
+  border: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.25));
+  border-radius: 4px;
+}
+
+.blockHead {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 9px 14px 9px 34px;
+  color: inherit;
+  background: none;
+  border: none;
+  border-radius: 3px;
+  text-align: left;
+}
+
+.blockHead:hover {
+  background: var(--vscode-list-hoverBackground);
+}
+
+/* The chevron that tells whether the block is open. */
+.blockHead::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 15px;
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid var(--vscode-descriptionForeground);
+  border-bottom: 1.5px solid var(--vscode-descriptionForeground);
+  transform: rotate(-45deg);
+}
+
+.block.open .blockHead::before {
+  top: 13px;
+  transform: rotate(45deg);
+}
+
+.line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 8px;
+}
+
+.index {
+  font-variant-numeric: tabular-nums;
+  color: var(--vscode-descriptionForeground);
+}
+
+.type {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--vscode-descriptionForeground);
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.facts {
+  display: block;
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
+  overflow-wrap: anywhere;
+}
+
+.blockBody {
+  padding: 12px 14px 14px 34px;
+  border-top: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.25));
+}
+
+h3 {
+  margin: 18px 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--vscode-descriptionForeground);
+}
+
+dl {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 4px 12px;
+  margin: 0;
+}
+
+dt {
+  color: var(--vscode-descriptionForeground);
+  overflow-wrap: anywhere;
+}
+
+dd {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+}
+
+.value {
+  min-width: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
+.mono .value {
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 12px;
+  /* Fingerprints carry their own break points, between the bytes. */
+  overflow-wrap: break-word;
+}
+
+.aside {
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
+}
+
+/* Out of the way until the row is pointed at; always there for the keyboard. */
+.copy {
+  flex-shrink: 0;
+  padding: 0 6px;
+  font-size: 11px;
+  opacity: 0;
+}
+
+dd:hover .copy,
+.copy:focus-visible {
+  opacity: 1;
+}
+
+.actions {
+  margin-top: 18px;
+}
+
+@media (max-width: 560px) {
+  dl {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  dd {
+    margin-bottom: 6px;
+  }
+}

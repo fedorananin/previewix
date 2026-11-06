@@ -1,0 +1,422 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--vscode-foreground);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+#toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  padding: 6px 10px;
+  background: var(--vscode-editorWidget-background);
+  border-bottom: 1px solid var(--vscode-widget-border, transparent);
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.group.right {
+  margin-left: auto;
+}
+
+/* The page's own controls. The scope keeps these rules off the form fields and editing widgets pdf.js puts into the document. */
+:is(#toolbar, #toolOptions, #notice, #password) :is(button, select, input) {
+  font: inherit;
+  border-radius: 2px;
+}
+
+:is(#toolbar, #toolOptions, #notice, #password) button {
+  color: var(--vscode-button-secondaryForeground);
+  background: var(--vscode-button-secondaryBackground);
+  border: 1px solid var(--vscode-button-border, transparent);
+  padding: 3px 10px;
+  cursor: pointer;
+}
+
+:is(#toolbar, #toolOptions, #notice, #password) button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+:is(#toolbar, #toolOptions, #notice, #password) button:hover:not(:disabled) {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+
+:is(#toolbar, #toolOptions, #notice, #password) button.primary {
+  color: var(--vscode-button-foreground);
+  background: var(--vscode-button-background);
+}
+
+:is(#toolbar, #toolOptions, #notice, #password) button.primary:hover:not(:disabled) {
+  background: var(--vscode-button-hoverBackground);
+}
+
+/* A switched-on toggle: the open sidebar, dark pages, the tool in use. */
+:is(#toolbar, #toolOptions) button[aria-pressed="true"] {
+  color: var(--vscode-inputOption-activeForeground, var(--vscode-foreground));
+  background: var(--vscode-inputOption-activeBackground);
+  border-color: var(--vscode-inputOption-activeBorder, transparent);
+}
+
+:is(#toolbar, #toolOptions, #password) :is(select, input) {
+  color: var(--vscode-input-foreground);
+  background: var(--vscode-input-background);
+  border: 1px solid var(--vscode-input-border, transparent);
+  padding: 2px 4px;
+}
+
+#page {
+  width: 52px;
+  text-align: right;
+}
+
+#pages, #findCount {
+  color: var(--vscode-descriptionForeground);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+#find {
+  width: 150px;
+}
+
+#toolOptions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  padding: 4px 10px;
+  background: var(--vscode-editorWidget-background);
+  border-bottom: 1px solid var(--vscode-widget-border, transparent);
+}
+
+#toolOptions .group {
+  gap: 12px;
+}
+
+#toolOptions label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+#toolOptions input[type="range"] {
+  width: 96px;
+  padding: 0;
+  border: none;
+  background: none;
+  accent-color: var(--vscode-button-background);
+}
+
+#toolOptions input[type="checkbox"] {
+  margin: 0;
+  accent-color: var(--vscode-button-background);
+}
+
+#toolOptions input[type="color"] {
+  width: 30px;
+  height: 22px;
+  padding: 0 1px;
+  cursor: pointer;
+}
+
+#textSize {
+  width: 52px;
+}
+
+.swatches {
+  display: flex;
+  gap: 6px;
+}
+
+#toolOptions .swatches button {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.5));
+  background: var(--swatch);
+  outline-offset: 1px;
+}
+
+#toolOptions .swatches button:hover {
+  background: var(--swatch);
+  outline: 2px solid var(--vscode-list-hoverBackground);
+}
+
+#toolOptions .swatches button[aria-pressed="true"] {
+  outline: 2px solid var(--vscode-focusBorder);
+}
+
+#notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  color: var(--vscode-inputValidation-warningForeground, var(--vscode-foreground));
+  background: var(--vscode-inputValidation-warningBackground);
+  border-bottom: 1px solid var(--vscode-inputValidation-warningBorder, transparent);
+}
+
+#noticeText {
+  flex: 1;
+}
+
+#noticeClose {
+  padding: 1px 7px;
+}
+
+#main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+#outline {
+  display: none;
+  width: 260px;
+  flex-shrink: 0;
+  overflow: auto;
+  padding: 8px 10px 20px 0;
+  box-sizing: border-box;
+  background: var(--vscode-sideBar-background);
+  border-right: 1px solid var(--vscode-widget-border, transparent);
+}
+
+body.outline-open #outline {
+  display: block;
+}
+
+#outline ul {
+  margin: 0;
+  padding-left: 14px;
+  list-style: none;
+}
+
+#outline a {
+  display: block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: var(--vscode-foreground);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#outline a:hover {
+  background: var(--vscode-list-hoverBackground);
+}
+
+#thumbs {
+  display: none;
+  width: 164px;
+  flex-shrink: 0;
+  overflow: hidden auto;
+  background: var(--vscode-sideBar-background);
+  border-right: 1px solid var(--vscode-widget-border, transparent);
+}
+
+body.thumbs-open #thumbs {
+  display: block;
+}
+
+#thumbsInner {
+  position: relative;
+}
+
+/* The slots are placed by script; their heights are repeated in pdf.js (THUMB_LABEL, THUMB_GAP). */
+.thumb {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--vscode-descriptionForeground);
+  text-decoration: none;
+  outline: none;
+}
+
+.thumb .picture {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 128px;
+  height: var(--thumb-height);
+}
+
+.thumb .picture:empty {
+  background: color-mix(in srgb, var(--vscode-foreground) 7%, transparent);
+}
+
+.thumb canvas {
+  display: block;
+  background: #fff;
+  outline: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.35));
+}
+
+.thumb:is(:hover, :focus-visible) canvas {
+  outline: 2px solid var(--vscode-list-hoverBackground);
+}
+
+.thumb.current canvas {
+  outline: 2px solid var(--vscode-focusBorder);
+}
+
+.thumb .label {
+  height: 22px;
+  line-height: 22px;
+  font-size: 0.85em;
+  font-variant-numeric: tabular-nums;
+}
+
+.thumb.current .label {
+  color: var(--vscode-foreground);
+  font-weight: 600;
+}
+
+#stage {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+}
+
+/* pdf.js requires the scrolling container to be absolutely positioned. */
+#viewerContainer {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  outline: none;
+  background: var(--vscode-editor-background);
+}
+
+#message, #password {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px;
+  text-align: center;
+  color: var(--vscode-descriptionForeground);
+}
+
+#message {
+  pointer-events: none;
+}
+
+/* ---- Editing widgets of pdf.js, dressed like the rest of the page ---- */
+
+/* pdf.js picks between its light and dark colors by the color scheme; whatever isn't overridden below follows the theme. */
+body.vscode-light :is(.editToolbar, .colorPicker) {
+  color-scheme: light;
+}
+
+body:is(.vscode-dark, .vscode-high-contrast:not(.vscode-high-contrast-light)) :is(.editToolbar, .colorPicker) {
+  color-scheme: dark;
+}
+
+#viewer .editToolbar {
+  --editor-toolbar-bg-color: var(--vscode-editorWidget-background);
+  --editor-toolbar-fg-color: var(--vscode-foreground);
+  --editor-toolbar-border-color: var(--vscode-widget-border, var(--vscode-contrastBorder, rgba(128, 128, 128, 0.4)));
+  --editor-toolbar-hover-bg-color: var(--vscode-toolbar-hoverBackground);
+  --editor-toolbar-hover-fg-color: var(--vscode-foreground);
+  --editor-toolbar-focus-outline-color: var(--vscode-focusBorder);
+  --editor-toolbar-shadow: 0 2px 8px var(--vscode-widget-shadow, rgba(0, 0, 0, 0.3));
+  border-radius: 3px;
+  font-family: var(--vscode-font-family);
+}
+
+#viewer .editToolbar .buttons > :not(.divider) {
+  border-radius: 2px;
+}
+
+#viewer .colorPicker {
+  --hover-outline-color: var(--vscode-list-hoverBackground);
+  --selected-outline-color: var(--vscode-focusBorder);
+  --swatch-border-color: var(--vscode-widget-border, rgba(128, 128, 128, 0.5));
+}
+
+#viewer .highlightEditor .editToolbar .buttons .colorPicker .dropdown {
+  border-radius: 3px;
+}
+
+/* The outline and handles of a selected annotation. */
+#viewer {
+  --outline-color: var(--vscode-focusBorder);
+  --outline-around-color: var(--vscode-editor-background);
+  --hover-outline-color: var(--vscode-descriptionForeground);
+}
+
+/* Describing a picture for screen readers needs a dialog this page doesn't have. */
+#viewer .editToolbar :is(.altText, .altText + .divider, .divider:has(+ .altText)) {
+  display: none;
+}
+
+/* ---- Dark pages ---- */
+
+/*
+ * One layer over each page inverts what is under it: the page, and the highlights, drawings and selection
+ * pdf.js paints into the same wrapper. --photos is set by pdf.js (the script) on pages with photographs
+ * and cuts them out of that layer. The amount is below 1 so that the paper becomes dark grey, not black.
+ */
+body.dark-pages .pdfViewer .canvasWrapper {
+  /* Keeps the layer below the text, the form fields and the editing boxes, which lie over the wrapper. */
+  isolation: isolate;
+}
+
+body.dark-pages .pdfViewer .canvasWrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 100001;
+  pointer-events: none;
+  backdrop-filter: url(#night);
+  mask: var(--photos, none) 0 0 / 100% 100% no-repeat;
+}
+
+/* What the same filter makes of white, for a page that hasn't been drawn yet. */
+body.dark-pages .pdfViewer .page {
+  background-color: #1a1a1a;
+}
+
+/* Form fields, notes and a text box being typed are HTML above that layer, so they are turned separately. */
+body.dark-pages .pdfViewer .annotationLayer,
+body.dark-pages .annotationEditorLayer .freeTextEditor > .internal,
+body.dark-pages .thumb canvas {
+  filter: url(#night);
+}
+
+/* pdf.js' colors for find matches are meant for white paper and all but vanish on a dark page. */
+body.dark-pages .textLayer .highlight {
+  --highlight-bg-color: rgb(255 120 235 / 0.4);
+  --highlight-selected-bg-color: rgb(110 255 110 / 0.45);
+}
+
+#filters {
+  position: absolute;
+  width: 0;
+  height: 0;
+}

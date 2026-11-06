@@ -1,0 +1,470 @@
+{
+  "name": "previewix",
+  "displayName": "Previewix",
+  "description": "Previews for videos, audio, images, SVG, 3D models, Markdown, HTML, PDF, Word, Excel, CSV and font files, certificates, archives and SQLite databases: media info and frame-by-frame video, an audio player with a tag editor, an image editor with annotations, blur and metadata, an animated GIF/WebP/PNG player, a 3D model viewer for glTF, STL, OBJ and PLY, an editable rendered Markdown view, a rendered view of HTML pages, PDF and DOCX viewers, spreadsheet tables, an archive browser, a font specimen, a certificate and key inspector, and an SQLite browser with row editing, import and export.",
+  "version": "0.14.1",
+  "publisher": "fedorananin",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fedorananin/previewix.git"
+  },
+  "homepage": "https://github.com/fedorananin/previewix#readme",
+  "bugs": {
+    "url": "https://github.com/fedorananin/previewix/issues"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "icon": "icon.png",
+  "categories": [
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "preview",
+    "viewer",
+    "video",
+    "audio",
+    "image",
+    "markdown",
+    "html",
+    "pdf",
+    "docx",
+    "excel",
+    "csv",
+    "sqlite",
+    "font",
+    "zip",
+    "svg",
+    "gif",
+    "heic",
+    "parquet",
+    "jsonl",
+    "7z",
+    "rar",
+    "3d",
+    "gltf",
+    "stl",
+    "certificate",
+    "mermaid",
+    "katex"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onWebviewPanel:previewix.imageCompare"
+  ],
+  "contributes": {
+    "configuration": {
+      "title": "Previewix",
+      "properties": {
+        "previewix.ffmpegPath": {
+          "type": "string",
+          "default": "",
+          "scope": "machine",
+          "markdownDescription": "Path to the `ffmpeg` executable. It is used to draw audio waveforms, to read and write the tags of Ogg, Opus and AIFF files, to save a clip of a video without re-encoding, and to read subtitle tracks stored inside a video. Leave empty to find it automatically."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "previewix.chooseFileTypes",
+        "title": "Choose File Types…",
+        "category": "Previewix"
+      },
+      {
+        "command": "previewix.openMarkdownPreview",
+        "title": "Open Previewix Preview",
+        "category": "Previewix",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "previewix.openHtmlPreview",
+        "title": "Open Previewix Preview",
+        "category": "Previewix",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "previewix.openSvgPreview",
+        "title": "Open Previewix Preview",
+        "category": "Previewix",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "previewix.openModelPreview",
+        "title": "Open Previewix 3D View",
+        "category": "Previewix",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "previewix.openCsvPreview",
+        "title": "Open Previewix Table",
+        "category": "Previewix",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "previewix.openCertPreview",
+        "title": "Open Previewix Certificate View",
+        "category": "Previewix",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "previewix.compressToZip",
+        "title": "Compress to ZIP",
+        "category": "Previewix"
+      },
+      {
+        "command": "previewix.compareImages",
+        "title": "Compare Images",
+        "category": "Previewix",
+        "icon": "$(diff)"
+      },
+      {
+        "command": "previewix.compareImageWith",
+        "title": "Compare Image with…",
+        "category": "Previewix"
+      },
+      {
+        "command": "previewix.compareImageWithHead",
+        "title": "Compare Image with Committed Version",
+        "category": "Previewix"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "previewix.compareImages",
+          "when": "activeEditor == workbench.editors.binaryResourceDiffEditor && resourceExtname =~ /^\\.(png|apng|jpe?g|jpe|webp|bmp|avif|ico|gif|heic|heif|tiff?|psd|psb|icns)$/i",
+          "group": "navigation"
+        },
+        {
+          "command": "previewix.openMarkdownPreview",
+          "when": "resourceLangId == markdown && activeEditor == workbench.editors.files.textFileEditor",
+          "group": "navigation"
+        },
+        {
+          "command": "previewix.openHtmlPreview",
+          "when": "resourceExtname =~ /^\\.html?$/i && activeEditor == workbench.editors.files.textFileEditor",
+          "group": "navigation"
+        },
+        {
+          "command": "previewix.openSvgPreview",
+          "when": "resourceExtname =~ /^\\.svg$/i && activeEditor == workbench.editors.files.textFileEditor",
+          "group": "navigation"
+        },
+        {
+          "command": "previewix.openModelPreview",
+          "when": "resourceExtname =~ /^\\.(gltf|obj)$/i && activeEditor == workbench.editors.files.textFileEditor",
+          "group": "navigation"
+        },
+        {
+          "command": "previewix.openCsvPreview",
+          "when": "resourceExtname =~ /^\\.(csv|tsv|tab|psv|jsonl|ndjson)$/i && activeEditor == workbench.editors.files.textFileEditor",
+          "group": "navigation"
+        },
+        {
+          "command": "previewix.openCertPreview",
+          "when": "resourceExtname =~ /^\\.(pem|crt|cer|cert|der|csr|p7b|p7c|ca-bundle|key)$/i && activeEditor == workbench.editors.files.textFileEditor",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "previewix.openMarkdownPreview",
+          "when": "editorLangId == markdown"
+        },
+        {
+          "command": "previewix.openHtmlPreview",
+          "when": "resourceExtname =~ /^\\.html?$/i"
+        },
+        {
+          "command": "previewix.openSvgPreview",
+          "when": "resourceExtname =~ /^\\.svg$/i"
+        },
+        {
+          "command": "previewix.openModelPreview",
+          "when": "resourceExtname =~ /^\\.(gltf|obj)$/i"
+        },
+        {
+          "command": "previewix.openCsvPreview",
+          "when": "resourceExtname =~ /^\\.(csv|tsv|tab|psv|jsonl|ndjson)$/i"
+        },
+        {
+          "command": "previewix.openCertPreview",
+          "when": "resourceExtname =~ /^\\.(pem|crt|cer|cert|der|csr|p7b|p7c|ca-bundle|key)$/i"
+        },
+        {
+          "command": "previewix.compressToZip",
+          "when": "false"
+        },
+        {
+          "command": "previewix.compareImageWith",
+          "when": "false"
+        },
+        {
+          "command": "previewix.compareImageWithHead",
+          "when": "resourceExtname =~ /^\\.(png|apng|jpe?g|jpe|webp|bmp|avif|ico|gif|heic|heif|tiff?|psd|psb|icns)$/i"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "previewix.compressToZip",
+          "when": "resourceScheme == file",
+          "group": "7_modification@9"
+        },
+        {
+          "command": "previewix.compareImages",
+          "when": "listDoubleSelection && resourceExtname =~ /^\\.(png|apng|jpe?g|jpe|webp|bmp|avif|ico|gif|heic|heif|tiff?|psd|psb|icns)$/i",
+          "group": "3_compare@9"
+        },
+        {
+          "command": "previewix.compareImageWith",
+          "when": "!listMultiSelection && resourceExtname =~ /^\\.(png|apng|jpe?g|jpe|webp|bmp|avif|ico|gif|heic|heif|tiff?|psd|psb|icns)$/i",
+          "group": "3_compare@9"
+        }
+      ]
+    },
+    "customEditors": [
+      {
+        "viewType": "previewix.audio",
+        "displayName": "Previewix Audio",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.{mp3,wav,flac,m4a,m4b,aac,ogg,oga,opus,aiff,aif,wma,ape,ac3,mka,MP3,WAV,FLAC,M4A,OGG,AIFF}"
+          }
+        ]
+      },
+      {
+        "viewType": "previewix.pdf",
+        "displayName": "Previewix PDF",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.{pdf,PDF}"
+          }
+        ]
+      },
+      {
+        "viewType": "previewix.docx",
+        "displayName": "Previewix Word",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.{docx,docm,dotx,DOCX}"
+          }
+        ]
+      },
+      {
+        "viewType": "previewix.markdown",
+        "displayName": "Previewix Markdown",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.{md,markdown,MD}"
+          }
+        ]
+      },
+      {
+        "viewType": "previewix.html",
+        "displayName": "Previewix HTML",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.{html,htm,HTML,HTM}"
+          }
+        ]
+      },
+      {
+        "viewType": "previewix.font",
+        "displayName": "Previewix Font",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.{ttf,otf,ttc,otc,woff,woff2,TTF,OTF,TTC,OTC,WOFF,WOFF2}"
+          }
+        ]
+      },
+      {
+        "viewType": "previewix.sqlite",
+        "displayName": "Previewix SQLite",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.{sqlite,sqlite3,db,db3,sdb,s3db,SQLITE,SQLITE3,DB,DB3}"
+          }
+        ]
+      },
+      {
+        "viewType": "previewix.video",
+        "displayName": "Previewix Video",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.{mp4,m4v,mov,webm,mkv,avi,ogv,wmv,flv,ts,mts,m2ts,mpg,mpeg,3gp,MP4,M4V,MOV,WEBM,MKV,AVI,OGV,WMV,FLV,MTS,M2TS,MPG,MPEG,3GP}"
+          }
+        ]
+      },
+      {
+        "viewType": "previewix.image",
+        "displayName": "Previewix Image",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.{png,apng,jpg,jpeg,jpe,webp,bmp,avif,ico,gif,heic,heif,tif,tiff,psd,psb,icns,PNG,APNG,JPG,JPEG,JPE,WEBP,BMP,AVIF,ICO,GIF,HEIC,HEIF,TIF,TIFF,PSD,PSB,ICNS}"
+          }
+        ]
+      },
+      {
+        "viewType": "previewix.archive",
+        "displayName": "Previewix Archive",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.{zip,jar,war,ear,vsix,epub,apk,ipa,whl,nupkg,cbz,xpi,tar,tgz,7z,rar,cb7,cbr,tbz,tbz2,txz,tzst,ZIP,JAR,WAR,EAR,VSIX,EPUB,APK,IPA,WHL,NUPKG,CBZ,XPI,TAR,TGZ,7Z,RAR,CB7,CBR,TBZ,TBZ2,TXZ,TZST}"
+          },
+          {
+            "filenamePattern": "*.tar.gz"
+          },
+          {
+            "filenamePattern": "*.TAR.GZ"
+          },
+          {
+            "filenamePattern": "*.tar.bz2"
+          },
+          {
+            "filenamePattern": "*.TAR.BZ2"
+          },
+          {
+            "filenamePattern": "*.tar.xz"
+          },
+          {
+            "filenamePattern": "*.TAR.XZ"
+          },
+          {
+            "filenamePattern": "*.tar.zst"
+          },
+          {
+            "filenamePattern": "*.TAR.ZST"
+          }
+        ]
+      },
+      {
+        "viewType": "previewix.svg",
+        "displayName": "Previewix SVG",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.{svg,SVG}"
+          }
+        ]
+      },
+      {
+        "viewType": "previewix.model",
+        "displayName": "Previewix 3D Model",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.{glb,gltf,stl,obj,ply,GLB,GLTF,STL,OBJ,PLY}"
+          }
+        ]
+      },
+      {
+        "viewType": "previewix.cert",
+        "displayName": "Previewix Certificate",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.{pem,crt,cer,cert,der,csr,p7b,p7c,ca-bundle,PEM,CRT,CER,CERT,DER,CSR,P7B,P7C}"
+          }
+        ]
+      },
+      {
+        "viewType": "previewix.csv",
+        "displayName": "Previewix Table",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.{csv,tsv,tab,psv,CSV,TSV,TAB,PSV}"
+          }
+        ]
+      },
+      {
+        "viewType": "previewix.xlsx",
+        "displayName": "Previewix Spreadsheet",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.{xlsx,xlsm,xls,xlsb,ods,numbers,XLSX,XLSM,XLS,XLSB,ODS,NUMBERS}"
+          }
+        ]
+      },
+      {
+        "viewType": "previewix.jsonl",
+        "displayName": "Previewix JSON Lines",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.{jsonl,ndjson,JSONL,NDJSON}"
+          }
+        ]
+      },
+      {
+        "viewType": "previewix.parquet",
+        "displayName": "Previewix Parquet",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.{parquet,PARQUET}"
+          }
+        ]
+      },
+      {
+        "viewType": "previewix.dbf",
+        "displayName": "Previewix dBase Table",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.{dbf,DBF}"
+          }
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p test",
+    "test": "node test/run.js",
+    "vscode:prepublish": "node esbuild.js --production",
+    "package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "^14.2.0",
+    "@types/node": "^22.0.0",
+    "@types/turndown": "^5.0.6",
+    "@types/vscode": "~1.90.0",
+    "@vscode/vsce": "^3.0.0",
+    "esbuild": "^0.28.0",
+    "typescript": "^5.6.0"
+  },
+  "dependencies": {
+    "@joplin/turndown-plugin-gfm": "^1.0.68",
+    "docx-preview": "^0.4.1",
+    "exifr": "^7.1.3",
+    "highlight.js": "^11.12.0",
+    "hyparquet": "1.31.1",
+    "katex": "0.18.9",
+    "libheif-js": "1.23.2",
+    "mammoth": "^1.13.0",
+    "markdown-it": "^15.0.2",
+    "mediainfo.js": "^0.3.8",
+    "mermaid": "11.17.2",
+    "node-unrar-js": "^2.0.2",
+    "pdfjs-dist": "^6.3.289",
+    "three": "^0.186.1",
+    "turndown": "^7.2.4",
+    "utif2": "^4.1.0",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+  }
+}

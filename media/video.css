@@ -1,0 +1,565 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  overflow: hidden;
+  color: var(--vscode-foreground);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+}
+
+#player {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+}
+
+#stage {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Subtitles and the menu are sized in shares of the stage (cqh, cqw). */
+  container-type: size;
+}
+
+/* Several elements below set a display of their own, which would otherwise win over the attribute. */
+[hidden] {
+  display: none !important;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  outline: none;
+}
+
+#notice {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: var(--vscode-inputValidation-warningBackground, #5a4a00);
+  border: 1px solid var(--vscode-inputValidation-warningBorder, #b89500);
+  color: var(--vscode-inputValidation-warningForeground, var(--vscode-foreground));
+}
+
+/* A confirmation that goes away by itself, in the corner so that it leaves subtitles at the top alone. It moves down while the notice holds the top. */
+#toast {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  max-width: 70%;
+  padding: 5px 12px;
+  border-radius: 4px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.75);
+  pointer-events: none;
+  z-index: 2;
+}
+
+#notice:not([hidden]) ~ #toast {
+  top: 64px;
+}
+
+/* ---- Subtitles ---- */
+
+.subs {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2em;
+  color: #fff;
+  font-size: clamp(13px, min(4.4cqh, 3.4cqw), 40px);
+  line-height: 1.35;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Above the controls while they show (their height comes from video.js), near the edge once they are gone. */
+#subs {
+  bottom: calc(var(--controls, 82px) - 14px);
+  transition: bottom 0.2s;
+}
+
+#stage.idle #subs {
+  bottom: 4cqh;
+}
+
+#subsTop {
+  top: 4cqh;
+}
+
+.cue {
+  max-width: 100%;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+/* A dark box behind every line keeps the text readable on any picture; the shadow covers the box's edges. */
+.cue > span {
+  padding: 0.06em 0.4em;
+  border-radius: 0.15em;
+  background: rgba(0, 0, 0, 0.68);
+  text-shadow: 0 0 3px #000, 0 1px 2px #000;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* ---- Player controls, laid over the bottom of the picture ---- */
+
+#controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 28px 12px 6px;
+  color: #fff;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
+  transition: opacity 0.2s;
+}
+
+/* Playing with the pointer at rest: nothing but the picture. */
+#stage.idle {
+  cursor: none;
+}
+
+#stage.idle #controls {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#seek {
+  position: relative;
+  height: 16px;
+  cursor: pointer;
+  touch-action: none;
+}
+
+#seek::before,
+#seekBuffered,
+#seekPlayed {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+#seek::before {
+  right: 0;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+#seekBuffered {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+#seekPlayed {
+  background: var(--vscode-button-background, #0e639c);
+}
+
+#seek:hover::before,
+#seek:hover #seekBuffered,
+#seek:hover #seekPlayed,
+#seek:hover #seekRange {
+  top: 5px;
+  height: 6px;
+  border-radius: 3px;
+}
+
+/* The A–B range: a band over the bar between two brackets. */
+#seekRange {
+  position: absolute;
+  top: 6px;
+  height: 4px;
+  background: rgba(255, 196, 0, 0.6);
+  pointer-events: none;
+}
+
+.mark {
+  position: absolute;
+  top: 1px;
+  width: 3px;
+  height: 10px;
+  border: 2px solid #ffc400;
+  pointer-events: none;
+}
+
+#markA {
+  border-right: none;
+}
+
+#markB {
+  margin-left: -5px;
+  border-left: none;
+}
+
+/* The preview over the seek bar: the frame at the pointer's time, and the time. */
+#peek {
+  position: absolute;
+  top: 22px;
+  transform: translate(-50%, -100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: rgba(20, 20, 20, 0.92);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  z-index: 3;
+}
+
+#peekFrame {
+  display: block;
+  height: 90px;
+  border-radius: 2px;
+}
+
+/* The picture of another moment, kept until the right one is decoded. */
+#peekFrame.stale {
+  opacity: 0.35;
+}
+
+/* In a narrow tab the buttons take a second row, which lines up with the right edge like the first. */
+#buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+#buttons .group {
+  display: flex;
+  gap: 4px;
+  margin: 0 6px;
+}
+
+#buttons .spacer {
+  flex: 1;
+}
+
+#time {
+  margin-left: 6px;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+#controls button.icon {
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+  color: inherit;
+  background: none;
+  border: none;
+  border-radius: 4px;
+}
+
+#controls button.icon:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+#controls svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+/* Each two-state button holds both icons; the state decides which one shows. */
+#controls .pause,
+#controls .silent,
+#controls .shrink,
+#stage.playing .play,
+#stage.muted .sound,
+body.fs .expand,
+#player:fullscreen .expand {
+  display: none;
+}
+
+#stage.playing .pause,
+#stage.muted .silent,
+body.fs .shrink,
+#player:fullscreen .shrink {
+  display: block;
+}
+
+/* Buttons that are on or off: loop, the two marks, subtitles. */
+#controls .toggle {
+  opacity: 0.55;
+}
+
+#controls .toggle[aria-pressed='true'] {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* A subtitle track is on its way. */
+#cc.busy svg {
+  animation: pulse 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  to {
+    opacity: 0.3;
+  }
+}
+
+/* The subtitles menu opens upward from its button, which is where video.js puts it. */
+#subMenu {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  min-width: 170px;
+  max-width: min(420px, calc(100% - 16px));
+  max-height: calc(100cqh - 70px);
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 4px;
+  border: 1px solid var(--vscode-menu-border, var(--vscode-widget-border, rgba(128, 128, 128, 0.4)));
+  border-radius: 5px;
+  color: var(--vscode-menu-foreground, var(--vscode-foreground, #ccc));
+  background: var(--vscode-menu-background, var(--vscode-editorWidget-background, #252526));
+  box-shadow: 0 2px 8px var(--vscode-widget-shadow, rgba(0, 0, 0, 0.4));
+  z-index: 4;
+}
+
+#subMenu .item {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 4px 10px 4px 26px;
+  border: none;
+  border-radius: 3px;
+  color: inherit;
+  background: none;
+  text-align: left;
+  white-space: nowrap;
+}
+
+#subMenu .item:hover,
+#subMenu .item:focus-visible {
+  color: var(--vscode-menu-selectionForeground, inherit);
+  background: var(--vscode-menu-selectionBackground, rgba(128, 128, 128, 0.25));
+  outline: none;
+}
+
+#subMenu .item[aria-checked='true']::before {
+  content: '✓';
+  position: absolute;
+  left: 8px;
+}
+
+#subMenu .label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#subMenu .detail {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.65;
+}
+
+#subMenu hr {
+  flex-shrink: 0;
+  width: 100%;
+  margin: 4px 0;
+  border: none;
+  border-top: 1px solid var(--vscode-menu-separatorBackground, rgba(128, 128, 128, 0.35));
+}
+
+#speed {
+  color: inherit;
+  background: none;
+  border-color: transparent;
+  cursor: pointer;
+}
+
+#speed:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+#speed option {
+  color: var(--vscode-dropdown-foreground);
+  background: var(--vscode-dropdown-background);
+}
+
+#volume {
+  width: 70px;
+  margin: 0 6px 0 0;
+  accent-color: #fff;
+  cursor: pointer;
+}
+
+
+button, select {
+  font: inherit;
+  color: var(--vscode-button-secondaryForeground);
+  background: var(--vscode-button-secondaryBackground);
+  border: 1px solid var(--vscode-button-border, transparent);
+  border-radius: 2px;
+  padding: 3px 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+
+select {
+  color: var(--vscode-dropdown-foreground);
+  background: var(--vscode-dropdown-background);
+  border-color: var(--vscode-dropdown-border);
+  padding: 2px 4px;
+}
+
+/* The whole bottom bar, with the one-line summary in it, is the toggle for the detailed info panel. */
+#bar {
+  display: flex;
+  justify-content: center;
+  padding: 9px 10px;
+  color: var(--vscode-descriptionForeground);
+  background: var(--vscode-editorWidget-background);
+  border: none;
+  border-top: 1px solid var(--vscode-widget-border, transparent);
+  border-radius: 0;
+  white-space: nowrap;
+}
+
+#summary {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#summary::after {
+  content: ' ›';
+}
+
+#bar:hover,
+body.info-open #bar {
+  color: var(--vscode-foreground);
+  background: var(--vscode-list-hoverBackground, rgba(128, 128, 128, 0.2));
+}
+
+body:not(.info-open) #info {
+  display: none;
+}
+
+#info {
+  width: 340px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  padding: 10px 14px 20px;
+  box-sizing: border-box;
+  background: var(--vscode-sideBar-background);
+  border-left: 1px solid var(--vscode-widget-border, transparent);
+  user-select: text;
+}
+
+#infoHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+#infoHeader .spacer {
+  flex: 1;
+}
+
+#closeInfo {
+  padding: 3px;
+  color: inherit;
+  background: none;
+  border-color: transparent;
+}
+
+#closeInfo:hover {
+  background: var(--vscode-toolbar-hoverBackground, rgba(128, 128, 128, 0.2));
+}
+
+#closeInfo svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+#info h3 {
+  margin: 16px 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--vscode-descriptionForeground);
+}
+
+#info dl {
+  display: grid;
+  grid-template-columns: 105px 1fr;
+  gap: 4px 10px;
+  margin: 0;
+}
+
+#info dt {
+  color: var(--vscode-descriptionForeground);
+}
+
+#info dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.muted {
+  color: var(--vscode-descriptionForeground);
+}
+
+/* Fullscreen: only the picture stays on screen. */
+body.fs #info,
+body.fs #bar,
+#player:fullscreen #bar {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  body {
+    flex-direction: column;
+  }
+
+  body.info-open #player {
+    flex: 0 0 55%;
+  }
+
+  #info {
+    width: auto;
+    flex: 1;
+    border-left: none;
+  }
+}

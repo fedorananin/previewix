@@ -1,0 +1,584 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--vscode-foreground);
+  background: var(--vscode-editor-background);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* ---- Controls ---- */
+
+button, select, input {
+  font: inherit;
+  border-radius: 2px;
+}
+
+button {
+  color: var(--vscode-button-secondaryForeground);
+  background: var(--vscode-button-secondaryBackground);
+  border: 1px solid var(--vscode-button-border, transparent);
+  padding: 3px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+button:hover:not(:disabled) {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+select, input[type='search'], input[type='text'] {
+  color: var(--vscode-input-foreground);
+  background: var(--vscode-input-background);
+  border: 1px solid var(--vscode-input-border, transparent);
+  padding: 3px 6px;
+}
+
+input:focus, select:focus {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+input[type='checkbox'] {
+  margin: 0;
+  accent-color: var(--vscode-button-background);
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.group.right {
+  margin-left: auto;
+}
+
+#toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  padding: 6px 10px;
+  background: var(--vscode-editorWidget-background);
+  border-bottom: 1px solid var(--vscode-widget-border, transparent);
+}
+
+#toolbar label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+#filter {
+  width: 200px;
+}
+
+#matches {
+  color: var(--vscode-descriptionForeground);
+  font-variant-numeric: tabular-nums;
+}
+
+#matches:empty {
+  display: none;
+}
+
+/* What the file had that the table doesn't show. */
+#notice {
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--vscode-inputValidation-warningForeground, var(--vscode-foreground));
+  background: var(--vscode-inputValidation-warningBackground, rgba(200, 150, 0, 0.15));
+  border-bottom: 1px solid var(--vscode-inputValidation-warningBorder, transparent);
+  max-height: 4.5em;
+  overflow-y: auto;
+}
+
+button.link {
+  padding: 0;
+  color: var(--vscode-textLink-foreground);
+  background: none;
+  border: none;
+  text-decoration: underline;
+}
+
+button.link:hover:not(:disabled) {
+  color: var(--vscode-textLink-activeForeground);
+  background: none;
+}
+
+/* ---- Popups: the copy menu and the filter of a column ---- */
+
+.popup {
+  position: fixed;
+  z-index: 10;
+  color: var(--vscode-menu-foreground, var(--vscode-foreground));
+  background: var(--vscode-menu-background, var(--vscode-editorWidget-background));
+  border: 1px solid var(--vscode-menu-border, var(--vscode-widget-border, rgba(128, 128, 128, 0.35)));
+  border-radius: 4px;
+  box-shadow: 0 2px 8px var(--vscode-widget-shadow, rgba(0, 0, 0, 0.35));
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  min-width: 190px;
+  padding: 4px;
+}
+
+.menu button {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 4px 10px;
+  color: inherit;
+  background: none;
+  border-color: transparent;
+  text-align: left;
+}
+
+.menu button:hover:not(:disabled),
+.menu button:focus {
+  color: var(--vscode-menu-selectionForeground, inherit);
+  background: var(--vscode-menu-selectionBackground, var(--vscode-list-hoverBackground));
+  outline: none;
+}
+
+.menu .hint {
+  opacity: 0.65;
+}
+
+.menu .divided {
+  margin-top: 4px;
+  border-top-color: var(--vscode-menu-separatorBackground, rgba(128, 128, 128, 0.35));
+  border-radius: 0;
+}
+
+#columnFilter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 220px;
+  padding: 8px;
+}
+
+#columnFilterTitle {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#columnFilter .group {
+  justify-content: flex-end;
+}
+
+#filterValue.invalid {
+  outline: 1px solid var(--vscode-inputValidation-errorBorder, #be1100);
+  outline-offset: -1px;
+}
+
+/* ---- Grid ---- */
+
+/* Rows are 24px and the header is 26px high; table.js places them by these numbers. */
+
+#gridWrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  outline: none;
+  /* Scroll anchoring would fight the rows that are redrawn under the pointer. */
+  overflow-anchor: none;
+}
+
+#canvas {
+  position: relative;
+  min-width: 100%;
+}
+
+#head {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  height: 26px;
+  background: var(--vscode-editorWidget-background);
+  user-select: none;
+}
+
+.th, .corner, .cell, .gutter {
+  box-sizing: border-box;
+  border-right: 1px solid var(--vscode-editorGroup-border, rgba(128, 128, 128, 0.2));
+  border-bottom: 1px solid var(--vscode-editorGroup-border, rgba(128, 128, 128, 0.2));
+  white-space: pre;
+  overflow: hidden;
+}
+
+.th {
+  position: absolute;
+  top: 0;
+  display: flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 8px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--vscode-editorWidget-background);
+}
+
+.th .name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* A column without a name of its own shows its letter or number. */
+.th .name.auto {
+  font-weight: normal;
+  color: var(--vscode-descriptionForeground);
+}
+
+.th .arrow {
+  margin-left: 5px;
+  font-size: 9px;
+}
+
+/* The type of a column, in the files that name one. */
+.th .type {
+  flex-shrink: 0;
+  margin-left: 6px;
+  font-size: 11px;
+  font-weight: normal;
+  font-variant-numeric: tabular-nums;
+  color: var(--vscode-descriptionForeground);
+}
+
+/* The funnel lies over the end of the name: there on the way to it, and for good while the column is filtered. */
+.th .funnel {
+  position: absolute;
+  top: 0;
+  right: 7px;
+  display: none;
+  align-items: center;
+  height: 100%;
+  padding: 0 3px 0 5px;
+  color: var(--vscode-descriptionForeground);
+  background: var(--vscode-editorWidget-background);
+}
+
+.th .funnel svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+}
+
+.th:hover .funnel,
+.th.filtered .funnel {
+  display: flex;
+}
+
+.th .funnel:hover {
+  color: var(--vscode-foreground);
+}
+
+.th.filtered {
+  box-shadow: inset 0 -2px var(--vscode-focusBorder);
+}
+
+.th.filtered .funnel {
+  color: var(--vscode-focusBorder);
+}
+
+.th.filtered .funnel svg {
+  fill: currentColor;
+}
+
+.th .resize {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 7px;
+  height: 100%;
+  cursor: col-resize;
+}
+
+.th .resize:hover,
+body.resizing .th .resize {
+  background: linear-gradient(to right, transparent 4px, var(--vscode-focusBorder) 4px);
+}
+
+body.resizing,
+body.resizing .th {
+  cursor: col-resize;
+}
+
+.corner {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  height: 26px;
+  background: var(--vscode-editorWidget-background);
+  cursor: pointer;
+}
+
+.row {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 24px;
+}
+
+.cell {
+  position: absolute;
+  top: 0;
+  height: 24px;
+  padding: 0 8px;
+  line-height: 23px;
+  text-overflow: ellipsis;
+  cursor: default;
+  user-select: none;
+}
+
+.cell.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.cell.selected {
+  background: var(--vscode-editor-inactiveSelectionBackground, rgba(128, 128, 128, 0.25));
+}
+
+.cell.active {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+/* Lies over the cells it spans, so it needs a background of its own. */
+.cell.merged {
+  z-index: 1;
+  background: var(--vscode-editor-background);
+}
+
+.cell.merged.selected {
+  background: linear-gradient(var(--vscode-editor-inactiveSelectionBackground, rgba(128, 128, 128, 0.25)) 0 0), var(--vscode-editor-background);
+}
+
+.cell mark {
+  color: inherit;
+  background: var(--vscode-editor-findMatchHighlightBackground, rgba(234, 92, 0, 0.33));
+  border-radius: 2px;
+}
+
+.gutter {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  height: 24px;
+  padding: 0 8px;
+  line-height: 23px;
+  text-align: right;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--vscode-descriptionForeground);
+  background: var(--vscode-editorWidget-background);
+  cursor: default;
+  user-select: none;
+}
+
+.gutter.selected {
+  color: var(--vscode-foreground);
+  background: var(--vscode-list-inactiveSelectionBackground, rgba(128, 128, 128, 0.25));
+}
+
+/* Where table.js measures texts; the classes repeat what sets the width of a text in the grid. */
+.ruler {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  white-space: pre;
+}
+
+.ruler span {
+  position: absolute;
+}
+
+.ruler .num {
+  font-variant-numeric: tabular-nums;
+}
+
+.ruler .bold {
+  font-weight: 600;
+}
+
+.ruler .small {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Editing (delimited text) ---- */
+
+/* Lies over the cell that is edited, with the cell's own metrics, so the text doesn't jump when it opens. */
+#editor {
+  position: absolute;
+  z-index: 3;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0 7px;
+  font: inherit;
+  line-height: 23px;
+  color: var(--vscode-input-foreground, var(--vscode-foreground));
+  background: var(--vscode-input-background, var(--vscode-editor-background));
+  border: 1px solid var(--vscode-focusBorder);
+  border-radius: 0;
+  outline: none;
+  resize: none;
+  white-space: pre;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#editor.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* A column name is edited in the header, above everything that scrolls under it. */
+#editor.name {
+  z-index: 6;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+#message {
+  position: sticky;
+  left: 0;
+  width: fit-content;
+  padding: 24px;
+  color: var(--vscode-descriptionForeground);
+  pointer-events: none;
+}
+
+/* ---- Selected cell ---- */
+
+#detail {
+  display: flex;
+  flex-direction: column;
+  max-height: 30%;
+  border-top: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.25));
+  background: var(--vscode-editorWidget-background);
+}
+
+#detailTitle {
+  padding: 4px 10px 0;
+  font-size: 11px;
+  color: var(--vscode-descriptionForeground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#detailText {
+  margin: 0;
+  padding: 2px 10px 6px;
+  min-height: 0;
+  overflow: auto;
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: var(--vscode-editor-font-size);
+  line-height: 1.4;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
+/* ---- Sheets and status ---- */
+
+#sheets {
+  display: flex;
+  gap: 2px;
+  padding: 4px 10px 0;
+  overflow-x: auto;
+  border-top: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.25));
+}
+
+.sheet {
+  flex-shrink: 0;
+  padding: 3px 12px;
+  color: inherit;
+  background: none;
+  border-color: transparent;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+}
+
+.sheet:hover:not(:disabled) {
+  background: var(--vscode-list-hoverBackground);
+}
+
+.sheet.active {
+  border-bottom-color: var(--vscode-focusBorder);
+  font-weight: 600;
+}
+
+.sheet.hiddenSheet {
+  font-style: italic;
+  color: var(--vscode-descriptionForeground);
+}
+
+.sheet .badge {
+  margin-left: 6px;
+  padding: 0 5px;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: normal;
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  opacity: 0.8;
+}
+
+#status {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
+  border-top: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.25));
+  white-space: nowrap;
+}
+
+/* The numbers of the selection keep their room; the description of the file gives way first. */
+#info {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#selection {
+  flex-shrink: 0;
+  max-width: 80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}

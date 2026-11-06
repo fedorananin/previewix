@@ -1,0 +1,624 @@
+html {
+  scroll-padding-top: 44px;
+  --outline: 240px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  color: var(--vscode-foreground);
+  background: var(--vscode-editor-background);
+  font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+button {
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--vscode-button-secondaryForeground);
+  background: var(--vscode-button-secondaryBackground);
+  border: 1px solid var(--vscode-button-border, transparent);
+  border-radius: 2px;
+  padding: 3px 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+
+button.primary {
+  color: var(--vscode-button-foreground);
+  background: var(--vscode-button-background);
+}
+
+button.primary:hover {
+  background: var(--vscode-button-hoverBackground);
+}
+
+/* ---- Page chrome ---- */
+
+#bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 5px 12px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--vscode-descriptionForeground);
+  background: var(--vscode-editor-background);
+  border-bottom: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.2));
+}
+
+#toast {
+  margin-left: auto;
+  color: var(--vscode-foreground);
+}
+
+#outlineToggle[aria-pressed='true'] {
+  color: var(--vscode-button-foreground);
+  background: var(--vscode-button-background);
+}
+
+/* ---- Outline ---- */
+
+/* Hangs under the bar (--bar is its measured height) and pushes the document to the right. */
+#outline {
+  position: fixed;
+  z-index: 4;
+  top: var(--bar, 34px);
+  bottom: 0;
+  left: 0;
+  box-sizing: border-box;
+  width: var(--outline);
+  padding: 8px 0 24px;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.4;
+  background: var(--vscode-sideBar-background, var(--vscode-editor-background));
+  border-right: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.2));
+}
+
+html.with-outline body {
+  padding-left: var(--outline);
+}
+
+html.with-outline #bar {
+  margin-left: calc(-1 * var(--outline));
+}
+
+#outline.empty::before {
+  content: 'No headings';
+  display: block;
+  padding: 3px 14px;
+  color: var(--vscode-descriptionForeground);
+}
+
+#outline a {
+  display: block;
+  padding: 3px 12px 3px 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--vscode-foreground);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+}
+
+#outline a.level-1 { padding-left: 26px; }
+#outline a.level-2 { padding-left: 40px; }
+#outline a.level-3 { padding-left: 54px; }
+#outline a.level-4 { padding-left: 68px; }
+#outline a.level-5 { padding-left: 82px; }
+
+#outline a:hover {
+  background: var(--vscode-list-hoverBackground, rgba(128, 128, 128, 0.12));
+}
+
+#outline a.current {
+  font-weight: 600;
+  color: var(--vscode-textLink-foreground);
+  border-left-color: var(--vscode-textLink-foreground);
+}
+
+#content,
+#tail {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 48px;
+}
+
+#content {
+  padding-top: 20px;
+}
+
+#content.empty::before {
+  content: 'This file is empty.';
+  color: var(--vscode-descriptionForeground);
+}
+
+#tail {
+  padding-top: 14px;
+  padding-bottom: 80px;
+}
+
+#add {
+  color: var(--vscode-descriptionForeground);
+  background: none;
+  border: 1px dashed var(--vscode-widget-border, rgba(128, 128, 128, 0.4));
+}
+
+#add:hover {
+  color: var(--vscode-foreground);
+  background: var(--vscode-toolbar-hoverBackground, rgba(128, 128, 128, 0.15));
+}
+
+/* ---- Blocks ---- */
+
+.block {
+  position: relative;
+  margin: 0 -12px;
+  padding: 1px 12px;
+  border-radius: 4px;
+}
+
+.block:hover {
+  background: var(--vscode-list-hoverBackground, rgba(128, 128, 128, 0.08));
+}
+
+.block > .edit {
+  position: absolute;
+  top: 4px;
+  left: -26px;
+  width: 26px;
+  height: 24px;
+  padding: 0;
+  font-size: 13px;
+  opacity: 0;
+  background: none;
+  border-color: transparent;
+  color: var(--vscode-descriptionForeground);
+}
+
+.block:hover > .edit,
+.block > .edit:focus-visible {
+  opacity: 1;
+}
+
+.block > .edit:hover {
+  color: var(--vscode-foreground);
+  background: var(--vscode-toolbar-hoverBackground, rgba(128, 128, 128, 0.2));
+}
+
+/* ---- Block editor ---- */
+
+.editor {
+  margin: 10px -12px;
+  border: 1px solid var(--vscode-focusBorder);
+  border-radius: 4px;
+  background: var(--vscode-editorWidget-background);
+}
+
+.editor .tools {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.2));
+}
+
+.editor .tools .bold {
+  font-weight: 700;
+}
+
+.editor .tools .italic {
+  font-style: italic;
+}
+
+.editor .tools .keys {
+  margin-left: auto;
+  margin-right: 6px;
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
+}
+
+.editor textarea {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 3.2em;
+  margin: 0;
+  padding: 10px 12px;
+  border: none;
+  outline: none;
+  resize: none;
+  field-sizing: content;
+  color: var(--vscode-editor-foreground);
+  background: var(--vscode-editor-background);
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: var(--vscode-editor-font-size, 13px);
+  line-height: 1.5;
+  tab-size: 2;
+}
+
+.editor-preview {
+  padding: 0 12px;
+  border-top: 1px dashed var(--vscode-widget-border, rgba(128, 128, 128, 0.35));
+}
+
+.editor-preview .block {
+  margin: 0;
+  padding: 1px 0;
+}
+
+.editor-preview .block:hover {
+  background: none;
+}
+
+.editor-preview .edit {
+  display: none;
+}
+
+/* ---- Markdown content ---- */
+
+.block h1, .block h2, .block h3, .block h4, .block h5, .block h6 {
+  margin: 1.1em 0 0.5em;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.block h1 {
+  font-size: 2em;
+  padding-bottom: 0.25em;
+  border-bottom: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.3));
+}
+
+.block h2 {
+  font-size: 1.5em;
+  padding-bottom: 0.25em;
+  border-bottom: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.3));
+}
+
+.block h3 { font-size: 1.25em; }
+.block h4 { font-size: 1em; }
+.block h5 { font-size: 0.9em; }
+.block h6 { font-size: 0.85em; color: var(--vscode-descriptionForeground); }
+
+.block p, .block ul, .block ol, .block pre, .block table, .block blockquote {
+  margin: 0.6em 0;
+}
+
+.block ul, .block ol {
+  padding-left: 1.8em;
+}
+
+.block li > p {
+  margin: 0.25em 0;
+}
+
+.block li.task-item {
+  list-style: none;
+}
+
+.block li.task-item > input.task,
+.block li.task-item > p > input.task {
+  margin: 0 0.4em 0 -1.4em;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.block a {
+  color: var(--vscode-textLink-foreground);
+  text-decoration: none;
+}
+
+.block a:hover {
+  color: var(--vscode-textLink-activeForeground);
+  text-decoration: underline;
+}
+
+.block img, .block video {
+  max-width: 100%;
+}
+
+.block code {
+  padding: 0.15em 0.35em;
+  border-radius: 3px;
+  background: var(--vscode-textCodeBlock-background, rgba(128, 128, 128, 0.18));
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 0.88em;
+}
+
+.block pre {
+  padding: 12px 14px;
+  overflow-x: auto;
+  border-radius: 4px;
+  background: var(--vscode-textCodeBlock-background, rgba(128, 128, 128, 0.18));
+  line-height: 1.45;
+}
+
+.block pre code {
+  padding: 0;
+  background: none;
+}
+
+.block pre.frontmatter {
+  font-size: 0.9em;
+  color: var(--vscode-descriptionForeground);
+  border-left: 3px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.4));
+}
+
+.block blockquote {
+  padding: 0 1em;
+  color: var(--vscode-descriptionForeground);
+  border-left: 4px solid var(--vscode-textBlockQuote-border, rgba(128, 128, 128, 0.4));
+}
+
+.block table {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.block th, .block td {
+  padding: 5px 12px;
+  border: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.35));
+}
+
+.block th {
+  font-weight: 600;
+  background: rgba(128, 128, 128, 0.1);
+}
+
+.block hr {
+  height: 2px;
+  margin: 1.4em 0;
+  border: none;
+  background: var(--vscode-widget-border, rgba(128, 128, 128, 0.35));
+}
+
+/* ---- Math (KaTeX) ---- */
+
+.block .katex-display {
+  margin: 0.8em 0;
+  padding: 2px 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.block .math-error {
+  color: var(--vscode-errorForeground);
+}
+
+.block code.math-error {
+  cursor: help;
+}
+
+.block div.math-error {
+  margin: 0.6em 0;
+}
+
+.block div.math-error pre {
+  margin-bottom: 0;
+  border-radius: 4px 4px 0 0;
+}
+
+.block div.math-error p,
+.diagram-error {
+  margin: 0 0 0.6em;
+  padding: 6px 14px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 0.85em;
+  line-height: 1.45;
+  color: var(--vscode-inputValidation-errorForeground, var(--vscode-foreground));
+  border: 1px solid var(--vscode-inputValidation-errorBorder, var(--vscode-errorForeground));
+  border-radius: 0 0 4px 4px;
+  background: var(--vscode-inputValidation-errorBackground, transparent);
+}
+
+/* ---- Diagrams (Mermaid) ---- */
+
+/* Holds the margins of what is inside, so the box is as tall with a picture as with the place kept for it. */
+.diagram {
+  display: flow-root;
+}
+
+.diagram .picture {
+  margin: 0.8em auto;
+}
+
+.diagram .picture svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+/* The last picture that worked stays under the message while the source is wrong. */
+.diagram.failed .picture {
+  opacity: 0.35;
+}
+
+.diagram.failed pre {
+  margin-bottom: 0;
+  border-radius: 4px 4px 0 0;
+}
+
+.diagram.failed .picture + pre[hidden] + .diagram-error {
+  border-radius: 4px;
+}
+
+/* Where Mermaid lays a picture out before it is shown. It is a .block too, so text is measured in the styles it
+   will be shown in. */
+#stage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* ---- Footnotes ---- */
+
+.block sup.footnote-ref {
+  line-height: 0;
+}
+
+.block .footnote-ref a {
+  padding: 0 1px;
+}
+
+.block .footnote {
+  display: flex;
+  gap: 0.6em;
+  font-size: 0.9em;
+  border-radius: 3px;
+}
+
+/* A rule above the first footnote of a run. */
+.block:not(:has(> .footnote)) + .block:has(> .footnote) > .footnote {
+  margin-top: 1em;
+  padding-top: 0.5em;
+  border-top: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.3));
+  border-radius: 0;
+}
+
+.block .footnote-mark {
+  flex: none;
+  min-width: 1.6em;
+  margin: 0.25em 0;
+  text-align: right;
+  color: var(--vscode-descriptionForeground);
+}
+
+.block .footnote-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.block .footnote-text > p {
+  margin: 0.25em 0;
+}
+
+.block .footnote.unused {
+  opacity: 0.6;
+}
+
+.block .footnote-back {
+  font-family: var(--vscode-editor-font-family, monospace);
+}
+
+/* Shows where a click on a footnote number or on its way back has led. */
+.block .lit {
+  animation: lit 1.6s ease-out;
+}
+
+@keyframes lit {
+  from {
+    background: var(--vscode-editor-findMatchHighlightBackground, rgba(234, 92, 0, 0.33));
+  }
+}
+
+/* ---- Alerts ---- */
+
+.block .alert {
+  --alert: #4493f8;
+  margin: 0.6em 0;
+  padding: 0.1em 1em;
+  border-left: 4px solid var(--alert);
+}
+
+.block .alert-tip { --alert: #3fb950; }
+.block .alert-important { --alert: #ab7df8; }
+.block .alert-warning { --alert: #d29922; }
+.block .alert-caution { --alert: #f85149; }
+
+.vscode-light .alert-note, .vscode-high-contrast-light .alert-note { --alert: #0969da; }
+.vscode-light .alert-tip, .vscode-high-contrast-light .alert-tip { --alert: #1a7f37; }
+.vscode-light .alert-important, .vscode-high-contrast-light .alert-important { --alert: #8250df; }
+.vscode-light .alert-warning, .vscode-high-contrast-light .alert-warning { --alert: #9a6700; }
+.vscode-light .alert-caution, .vscode-high-contrast-light .alert-caution { --alert: #cf222e; }
+
+.block .alert-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-weight: 600;
+  color: var(--alert);
+}
+
+.block .alert-title svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---- Syntax highlighting (highlight.js classes) ---- */
+
+.hljs-comment, .hljs-quote { color: #6a9955; font-style: italic; }
+.hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-built_in, .hljs-type { color: #569cd6; }
+.hljs-string, .hljs-regexp, .hljs-addition, .hljs-attribute, .hljs-meta .hljs-string { color: #ce9178; }
+.hljs-number, .hljs-symbol, .hljs-bullet { color: #b5cea8; }
+.hljs-title, .hljs-section, .hljs-name, .hljs-selector-id, .hljs-selector-class { color: #dcdcaa; }
+.hljs-attr, .hljs-variable, .hljs-template-variable, .hljs-property { color: #9cdcfe; }
+.hljs-meta, .hljs-doctag { color: #c586c0; }
+.hljs-deletion { color: #f48771; }
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: 700; }
+
+.vscode-light .hljs-comment, .vscode-light .hljs-quote { color: #008000; }
+.vscode-light .hljs-keyword, .vscode-light .hljs-selector-tag, .vscode-light .hljs-literal,
+.vscode-light .hljs-built_in, .vscode-light .hljs-type { color: #0000ff; }
+.vscode-light .hljs-string, .vscode-light .hljs-regexp, .vscode-light .hljs-addition,
+.vscode-light .hljs-attribute, .vscode-light .hljs-meta .hljs-string { color: #a31515; }
+.vscode-light .hljs-number, .vscode-light .hljs-symbol, .vscode-light .hljs-bullet { color: #098658; }
+.vscode-light .hljs-title, .vscode-light .hljs-section, .vscode-light .hljs-name,
+.vscode-light .hljs-selector-id, .vscode-light .hljs-selector-class { color: #795e26; }
+.vscode-light .hljs-attr, .vscode-light .hljs-variable, .vscode-light .hljs-template-variable,
+.vscode-light .hljs-property { color: #001080; }
+.vscode-light .hljs-meta, .vscode-light .hljs-doctag { color: #af00db; }
+.vscode-light .hljs-deletion { color: #cd3131; }
+
+/* Too narrow for two columns: the outline lies over the document instead. */
+@media (max-width: 720px) {
+  html.with-outline body {
+    padding-left: 0;
+  }
+
+  html.with-outline #bar {
+    margin-left: 0;
+  }
+
+  #outline {
+    width: min(var(--outline), 80vw);
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.35);
+  }
+}
+
+@media (max-width: 640px) {
+  #content,
+  #tail {
+    padding-left: 36px;
+    padding-right: 20px;
+  }
+}

@@ -1,0 +1,12 @@
+.vscode/**
+src/**
+webview/**
+test/**
+node_modules/**
+esbuild.js
+tsconfig.json
+.gitignore
+**/*.map
+*.vsix
+AGENTS.md
+icon.svg

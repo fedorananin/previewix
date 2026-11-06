@@ -1,0 +1,369 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--vscode-foreground);
+  background: var(--vscode-editor-background);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  /* Name, size, packed size, modified: shared by the column titles and every row. */
+  --columns: minmax(0, 1fr) 84px 84px 150px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* ---- Header ---- */
+
+#head {
+  flex: none;
+  padding: 14px 16px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+}
+
+#name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+#summary {
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
+  font-variant-numeric: tabular-nums;
+}
+
+#toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+#filter {
+  flex: 0 1 280px;
+  min-width: 120px;
+}
+
+#matches {
+  margin-right: auto;
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
+}
+
+#note {
+  margin: 0;
+  padding: 6px 10px;
+  border-left: 3px solid var(--vscode-editorWarning-foreground, #cca700);
+  background: var(--vscode-inputValidation-warningBackground, rgba(204, 167, 0, 0.12));
+}
+
+button, input {
+  font: inherit;
+  border-radius: 2px;
+}
+
+button {
+  color: var(--vscode-button-secondaryForeground);
+  background: var(--vscode-button-secondaryBackground);
+  border: 1px solid var(--vscode-button-border, transparent);
+  padding: 3px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+button:hover:not(:disabled) {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+button.primary {
+  color: var(--vscode-button-foreground);
+  background: var(--vscode-button-background);
+}
+
+button.primary:hover:not(:disabled) {
+  background: var(--vscode-button-hoverBackground);
+}
+
+input {
+  color: var(--vscode-input-foreground);
+  background: var(--vscode-input-background);
+  border: 1px solid var(--vscode-input-border, transparent);
+  padding: 3px 6px;
+}
+
+input::placeholder {
+  color: var(--vscode-input-placeholderForeground);
+}
+
+input:focus, button:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+/* ---- Tree ---- */
+
+#columns, .row {
+  display: grid;
+  grid-template-columns: var(--columns);
+  column-gap: 12px;
+  align-items: center;
+  padding-right: 16px;
+}
+
+#columns {
+  flex: none;
+  /* The tree below always has a scrollbar gutter; the titles line up with the rows only with the same one. */
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--vscode-descriptionForeground);
+  border-bottom: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.25));
+}
+
+#columns::-webkit-scrollbar {
+  background: transparent;
+}
+
+#columns::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+#tree {
+  flex: 1;
+  min-height: 0;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  outline: none;
+}
+
+#spacer {
+  position: relative;
+  overflow: hidden;
+}
+
+#rows {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.row {
+  height: 22px;
+  box-sizing: border-box;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.row:hover {
+  background: var(--vscode-list-hoverBackground);
+}
+
+.row.selected {
+  color: var(--vscode-list-inactiveSelectionForeground, inherit);
+  background: var(--vscode-list-inactiveSelectionBackground);
+}
+
+#tree:focus .row.selected {
+  color: var(--vscode-list-activeSelectionForeground);
+  background: var(--vscode-list-activeSelectionBackground);
+  outline: 1px solid var(--vscode-list-focusOutline, transparent);
+  outline-offset: -1px;
+}
+
+.name {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.label mark {
+  color: inherit;
+  background: var(--vscode-editor-findMatchHighlightBackground, rgba(234, 92, 0, 0.33));
+  border-radius: 2px;
+}
+
+.detail {
+  flex: none;
+  max-width: 45%;
+  margin-left: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.9em;
+  opacity: 0.65;
+}
+
+/* The mark of an entry that needs a password. */
+.lock {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  opacity: 0.7;
+}
+
+.lock svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+.blocked .label, .blocked .icon {
+  opacity: 0.55;
+}
+
+.blocked .detail {
+  color: var(--vscode-editorWarning-foreground, #cca700);
+  opacity: 1;
+}
+
+#tree:focus .row.selected .detail {
+  color: inherit;
+}
+
+/* The arrow of a folder, drawn as a rotated corner. */
+.twisty {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  position: relative;
+}
+
+.twisty:not(.none)::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 5px;
+  height: 5px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  opacity: 0.8;
+}
+
+.twisty.open::before {
+  left: 4px;
+  top: 2px;
+  transform: rotate(45deg);
+}
+
+.icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  opacity: 0.85;
+}
+
+.icon svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.folder .icon {
+  color: var(--vscode-symbolIcon-folderForeground, currentColor);
+}
+
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.row .num, .row .date {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--vscode-descriptionForeground);
+}
+
+#tree:focus .row.selected .num,
+#tree:focus .row.selected .date {
+  color: inherit;
+}
+
+#message {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  padding: 0 24px;
+  text-align: center;
+  color: var(--vscode-descriptionForeground);
+  overflow-wrap: anywhere;
+}
+
+/* An archive that hides even its list of files behind a password. */
+#locked {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  padding: 0 24px;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  color: var(--vscode-descriptionForeground);
+}
+
+#locked p {
+  margin: 0;
+}
+
+body.failed #columns,
+body.failed #toolbar {
+  display: none;
+}
+
+/* A narrow editor keeps the names readable by dropping the less important columns. */
+@media (max-width: 620px) {
+  body {
+    --columns: minmax(0, 1fr) 84px;
+  }
+
+  #filter {
+    flex: 1 1 100%;
+  }
+
+  #columns span:nth-child(n + 3),
+  .row > :nth-child(n + 3) {
+    display: none;
+  }
+}

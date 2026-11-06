@@ -1,0 +1,178 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--vscode-foreground);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  user-select: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* ---- Toolbar: the same look as the SVG view ---- */
+
+#toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  padding: 6px 10px;
+  background: var(--vscode-editorWidget-background);
+  border-bottom: 1px solid var(--vscode-widget-border, transparent);
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.group.right {
+  margin-left: auto;
+}
+
+label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+button, select {
+  font: inherit;
+  border-radius: 2px;
+}
+
+button {
+  color: var(--vscode-button-secondaryForeground);
+  background: var(--vscode-button-secondaryBackground);
+  border: 1px solid var(--vscode-button-border, transparent);
+  padding: 3px 10px;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+select {
+  color: var(--vscode-input-foreground);
+  background: var(--vscode-input-background);
+  border: 1px solid var(--vscode-input-border, transparent);
+  padding: 2px 4px;
+}
+
+input[type='checkbox'] {
+  margin: 0;
+  accent-color: var(--vscode-button-background);
+}
+
+/* ---- Page ---- */
+
+#stage {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  background: var(--vscode-editor-background);
+}
+
+/* The page's own area. It has the chosen width, and is scaled down as a whole when that doesn't fit. */
+#sheet {
+  position: absolute;
+  top: 0;
+  transform-origin: 0 0;
+  /* What a browser shows behind a page that sets no background of its own. */
+  background: #ffffff;
+  color-scheme: light;
+}
+
+#sheet.framed {
+  box-shadow: 0 0 0 1px var(--vscode-widget-border, var(--vscode-contrastBorder, #5555));
+}
+
+#sheet iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* A changed page loads behind the one on screen and takes its place once it is there, so typing doesn't flicker. */
+#sheet iframe.pending {
+  visibility: hidden;
+}
+
+/* The last page that could be read stays behind the error. */
+#stage.broken #sheet {
+  opacity: 0.25;
+}
+
+#error {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: var(--vscode-editor-font-family);
+  font-size: var(--vscode-editor-font-size);
+  user-select: text;
+  background: var(--vscode-inputValidation-errorBackground, #5a1d1d);
+  border: 1px solid var(--vscode-inputValidation-errorBorder, #be1100);
+  color: var(--vscode-inputValidation-errorForeground, var(--vscode-foreground));
+}
+
+#message {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  color: var(--vscode-descriptionForeground);
+  background: var(--vscode-editor-background);
+}
+
+#status {
+  display: flex;
+  gap: 18px;
+  padding: 3px 10px;
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
+  background: var(--vscode-editorWidget-background);
+  border-top: 1px solid var(--vscode-widget-border, transparent);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+#statInfo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#toast {
+  margin-left: auto;
+  color: var(--vscode-foreground);
+}

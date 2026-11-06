@@ -1,0 +1,204 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--vscode-foreground);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  user-select: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* ---- Toolbar: the same look as the image editor ---- */
+
+#toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  padding: 6px 10px;
+  background: var(--vscode-editorWidget-background);
+  border-bottom: 1px solid var(--vscode-widget-border, transparent);
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.group.right {
+  margin-left: auto;
+}
+
+label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+button, select, input[type='number'] {
+  font: inherit;
+  border-radius: 2px;
+}
+
+button {
+  color: var(--vscode-button-secondaryForeground);
+  background: var(--vscode-button-secondaryBackground);
+  border: 1px solid var(--vscode-button-border, transparent);
+  padding: 3px 10px;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+button.primary,
+button.active {
+  color: var(--vscode-button-foreground);
+  background: var(--vscode-button-background);
+}
+
+button.primary:hover:not(:disabled),
+button.active:hover {
+  background: var(--vscode-button-hoverBackground);
+}
+
+select, input[type='number'] {
+  color: var(--vscode-input-foreground);
+  background: var(--vscode-input-background);
+  border: 1px solid var(--vscode-input-border, transparent);
+  padding: 2px 4px;
+}
+
+#exportPanel {
+  position: absolute;
+  top: 44px;
+  right: 10px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: var(--vscode-editorWidget-background);
+  border: 1px solid var(--vscode-widget-border, var(--vscode-contrastBorder, #5555));
+  border-radius: 4px;
+  box-shadow: 0 4px 14px var(--vscode-widget-shadow, rgba(0, 0, 0, 0.35));
+}
+
+#exportPanel input[type='number'] {
+  width: 72px;
+}
+
+#outSize {
+  color: var(--vscode-descriptionForeground);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Picture ---- */
+
+#stage {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  background: var(--vscode-editor-background);
+  cursor: grab;
+  touch-action: none;
+}
+
+#stage.panning {
+  cursor: grabbing;
+}
+
+/* The picture's own area, which carries the chosen background. */
+#sheet {
+  position: absolute;
+  pointer-events: none;
+}
+
+#sheet.checker {
+  background: repeating-conic-gradient(#d9d9d9 0% 25%, #ffffff 0% 50%) 0 0 / 16px 16px;
+}
+
+#sheet.light {
+  background: #ffffff;
+}
+
+#sheet.dark {
+  background: #1e1e1e;
+}
+
+#sheet img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The last picture that worked stays behind the error, so that a typo doesn't blank the preview. */
+#stage.broken #sheet {
+  opacity: 0.25;
+}
+
+#error {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: var(--vscode-editor-font-family);
+  font-size: var(--vscode-editor-font-size);
+  user-select: text;
+  background: var(--vscode-inputValidation-errorBackground, #5a1d1d);
+  border: 1px solid var(--vscode-inputValidation-errorBorder, #be1100);
+  color: var(--vscode-inputValidation-errorForeground, var(--vscode-foreground));
+}
+
+#message {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+  color: var(--vscode-descriptionForeground);
+  pointer-events: none;
+}
+
+#status {
+  display: flex;
+  gap: 18px;
+  padding: 3px 10px;
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
+  background: var(--vscode-editorWidget-background);
+  border-top: 1px solid var(--vscode-widget-border, transparent);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+#toast {
+  margin-left: auto;
+  color: var(--vscode-foreground);
+}

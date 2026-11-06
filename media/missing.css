@@ -1,0 +1,30 @@
+/* Above everything a page has, the pdf.js viewer layers included. */
+#missing {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px;
+  box-sizing: border-box;
+  text-align: center;
+  color: var(--vscode-descriptionForeground);
+  background: var(--vscode-editor-background);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+}
+
+#missing strong {
+  font-size: 1.3em;
+  font-weight: 600;
+  color: var(--vscode-foreground);
+}
+
+#missing .name {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-family: var(--vscode-editor-font-family);
+}
